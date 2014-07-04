@@ -1,0 +1,27 @@
+name: h-router
+main: index.js
+version: 0.0.1
+description: 'high performance router'
+author:
+  name: tianmo
+  email: azhangwq@gmail.com
+engines:
+  node: >=0.8.0
+homepage: https://github.com/tianmo/h-router
+repository:
+  type: git
+  url: git://github.com/tianmo/h-router.git
+bugs:
+  url: https://github.com/tianmo/h-router/issues
+dependencies: {}
+devDependencies:
+  coffee-script: '*'
+  mocha: '*'
+  expect.js: '*'
+  istanbul: '*'
+  yamljs: '*'
+  connect: '*'
+scripts:
+  prepublish: make release
+  postpublish: make clean
+  test: make test-cov

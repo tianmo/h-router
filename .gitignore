@@ -1,0 +1,12 @@
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.sublime-*
+
+/npm-debug.log
+/out/test
+/node_modules
