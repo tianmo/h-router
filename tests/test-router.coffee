@@ -175,3 +175,29 @@ describe 'router', ->
     mw req, res
     setTimeout ->
       done()
+
+  it 're-regist Func', (done)->
+    app = Router()
+    app.registFunc '/fine', (req, res, next)=>
+      res.end()
+    app.registFunc '/api', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.use '/api', (req, res, next)=>
+      e().fail 'should not exec'
+      next()
+    app.registFunc '/api', (req, res, next)=>
+      res.end()
+    app.use '/api', (req, res, next)=>
+      next()
+    mw = app.handle()
+    req = new request '/fine'
+    res = new response
+    res.end = ->
+      req = new request '/api'
+      res = new response
+      res.end = ->
+        done()
+        res.headersSent = true
+      mw req, res
+    mw req, res

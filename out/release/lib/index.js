@@ -20,11 +20,25 @@ Router = (function() {
     return this.compile();
   };
 
+  Router.prototype["delete"] = function(route) {
+    var i, router, _i, _len, _ref, _results;
+    _ref = this.stack;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      router = _ref[i];
+      if (router.route === route) {
+        _results.push(this.stack.splice(i, 1));
+      }
+    }
+    return _results;
+  };
+
   Router.prototype.registFunc = function(route, fn) {
     if ('function' === typeof route) {
       fn = route;
       route = '/';
     }
+    this["delete"](route);
     return this.funcs[route] = fn;
   };
 
