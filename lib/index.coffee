@@ -11,7 +11,7 @@ class Router
     @stack.push route : route, handle : fn
     @compile()
 
-  delete: (route) ->
+  unuse: (route) ->
     for router,i in @stack when router.route is route
       @stack.splice i, 1
 
@@ -19,7 +19,7 @@ class Router
     if 'function' is typeof route
       fn = route
       route = '/'
-    @delete(route)
+    @unuse(route)
     @funcs[route] = fn
 
   compile : ->
