@@ -11,10 +11,15 @@ class Router
     @stack.push route : route, handle : fn
     @compile()
 
+  delete: (route) ->
+    for router,i in @stack when router.route is route
+      @stack.splice i, 1
+
   registFunc : (route, fn)->
     if 'function' is typeof route
       fn = route
       route = '/'
+    @delete(route)
     @funcs[route] = fn
 
   compile : ->
