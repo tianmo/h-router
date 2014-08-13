@@ -20,7 +20,7 @@ Router = (function() {
     return this.compile();
   };
 
-  Router.prototype["delete"] = function(route) {
+  Router.prototype.unuse = function(route) {
     var i, router, _i, _len, _ref, _results;
     _ref = this.stack;
     _results = [];
@@ -38,7 +38,7 @@ Router = (function() {
       fn = route;
       route = '/';
     }
-    this["delete"](route);
+    this.unuse(route);
     return this.funcs[route] = fn;
   };
 
