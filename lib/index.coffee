@@ -12,8 +12,10 @@ class Router
     @compile()
 
   unuse: (route) ->
-    for router,i in @stack when router.route is route
-      @stack.splice i, 1
+    newStack = []
+    for router,i in @stack when router.route isnt route
+      newStack.push router
+    @stack = newStack
 
   registFunc : (route, fn)->
     if 'function' is typeof route
@@ -21,6 +23,11 @@ class Router
       route = '/'
     @unuse(route)
     @funcs[route] = fn
+
+  unRegist : (route)->
+    @unuse route
+    delete @funcs[route] if @funcs[route]
+    @compile()
 
   compile : ->
     middlewares = {}

@@ -21,16 +21,16 @@ Router = (function() {
   };
 
   Router.prototype.unuse = function(route) {
-    var i, router, _i, _len, _ref, _results;
+    var i, newStack, router, _i, _len, _ref;
+    newStack = [];
     _ref = this.stack;
-    _results = [];
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       router = _ref[i];
-      if (router.route === route) {
-        _results.push(this.stack.splice(i, 1));
+      if (router.route !== route) {
+        newStack.push(router);
       }
     }
-    return _results;
+    return this.stack = newStack;
   };
 
   Router.prototype.registFunc = function(route, fn) {
@@ -40,6 +40,14 @@ Router = (function() {
     }
     this.unuse(route);
     return this.funcs[route] = fn;
+  };
+
+  Router.prototype.unRegist = function(route) {
+    this.unuse(route);
+    if (this.funcs[route]) {
+      delete this.funcs[route];
+    }
+    return this.compile();
   };
 
   Router.prototype.compile = function() {

@@ -1,6 +1,6 @@
 name: h-router
 main: index.js
-version: 0.0.2
+version: 0.0.3
 description: 'high performance router'
 author:
   name: tianmo
