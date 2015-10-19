@@ -1,15 +1,21 @@
+defaultRouter = (req, res)->
+  res.statusCode = 404
+  res.end "#{req.originalUrl} not found"
+
 class Router
-  constructor : ->
+  constructor : (options = {})->
     @stack = []
     @funcs = {}
     @routers = {}
+    @defaultRouter = options.defaultRouter or defaultRouter
+    @compileBuffer = options.compileBuffer
 
   use : (route, fn)->
     if 'function' is typeof route
       fn = route
       route = '/'
     @stack.push route : route, handle : fn
-    @compile()
+    @compile() unless @compileBuffer
 
   unuse: (route) ->
     newStack = []
@@ -72,7 +78,7 @@ class Router
     next = =>
       router = routers[index++]
       return if res.headersSent
-      return if !router
+      router = @defaultRouter unless router
       router req, res, next.bind @
     next()
 
@@ -92,5 +98,5 @@ class Router
     req.url = path.substr url.length
     @execMws req, res, stack
 
-module.exports = ->
-  new Router
+module.exports = (options)->
+  new Router options

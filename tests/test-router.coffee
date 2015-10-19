@@ -154,8 +154,8 @@ describe 'router', ->
     mw = app.handle()
     req = new request '/api/test/name'
     res = new response
-    res.end = ->
-      e().fail 'should not exec'
+    res.end = (msg)->
+      e(msg).to.be '/api/test/name not found'
     mw req, res
     setTimeout ->
       done()
@@ -201,3 +201,87 @@ describe 'router', ->
         res.headersSent = true
       mw req, res
     mw req, res
+
+describe 'compile buffer', ->
+  it 'not found', (done)->
+    app = Router compileBuffer : true
+    app.registFunc (req, res, next)=>
+      e().fail 'should not exec'
+    app.registFunc '/api/test', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.registFunc '/api/route', (req, res, next)=>
+      e(req.query.join ' ').to.be 'root api route'
+      res.end()
+    app.registFunc '/api/route1', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.registFunc '/api/route/r1/r2/r3', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.use (req, res, next)=>
+      req.query = ['root']
+      next()
+    app.use '/api', (req, res, next)=>
+      req.query.push 'api'
+      next()
+    app.use '/api/route', (req, res, next)=>
+      req.query.push 'route'
+      next()
+    app.use '/api/route1', (req, res, next)=>
+      req.query.push 'route1'
+      e().fail 'should not exec'
+      next()
+    app.use '/api/route/r1/r2', (req, res, next)=>
+      req.query.push 'r1 r2'
+      e().fail 'should not exec'
+      next()
+    mw = app.handle()
+    req = new request '/api/route/r1/r2'
+    res = new response
+    res.end = (msg)->
+      e(msg).to.be '/api/route/r1/r2 not found'
+    mw req, res
+    done()
+
+  it 'sucess', (done)->
+    app = Router compileBuffer : true
+    app.registFunc (req, res, next)=>
+      e().fail 'should not exec'
+    app.registFunc '/api/test', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.registFunc '/api/route', (req, res, next)=>
+      e(req.query.join ' ').to.be 'root api route'
+      res.end req.query.join ' '
+    app.registFunc '/api/route1', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.registFunc '/api/route/r1/r2/r3', (req, res, next)=>
+      e().fail 'should not exec'
+      res.end()
+    app.use (req, res, next)=>
+      req.query = ['root']
+      next()
+    app.use '/api', (req, res, next)=>
+      req.query.push 'api'
+      next()
+    app.use '/api/route', (req, res, next)=>
+      req.query.push 'route'
+      next()
+    app.use '/api/route1', (req, res, next)=>
+      req.query.push 'route1'
+      e().fail 'should not exec'
+      next()
+    app.use '/api/route/r1/r2', (req, res, next)=>
+      req.query.push 'r1 r2'
+      e().fail 'should not exec'
+      next()
+    app.compile()
+    mw = app.handle()
+    req = new request '/api/route/r1/r2'
+    res = new response
+    res.end = (msg)->
+      e(msg).to.be 'root api route'
+    mw req, res
+    done()
